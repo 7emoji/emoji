@@ -1,11 +1,11 @@
 const { expectRevert } = require('@openzeppelin/test-helpers');
-const SushiToken = artifacts.require('SushiToken');
-const SushiBar = artifacts.require('SushiBar');
+const EmojiToken = artifacts.require('EmojiToken');
+const EmojiBar = artifacts.require('EmojiBar');
 
-contract('SushiBar', ([alice, bob, carol]) => {
+contract('EmojiBar', ([alice, bob, carol]) => {
     beforeEach(async () => {
-        this.sushi = await SushiToken.new({ from: alice });
-        this.bar = await SushiBar.new(this.sushi.address, { from: alice });
+        this.sushi = await EmojiToken.new({ from: alice });
+        this.bar = await EmojiBar.new(this.sushi.address, { from: alice });
         this.sushi.mint(alice, '100', { from: alice });
         this.sushi.mint(bob, '100', { from: alice });
         this.sushi.mint(carol, '100', { from: alice });
@@ -44,9 +44,9 @@ contract('SushiBar', ([alice, bob, carol]) => {
         assert.equal((await this.bar.balanceOf(alice)).valueOf(), '20');
         assert.equal((await this.bar.balanceOf(bob)).valueOf(), '10');
         assert.equal((await this.sushi.balanceOf(this.bar.address)).valueOf(), '30');
-        // SushiBar get 20 more SUSHIs from an external source.
+        // EmojiBar get 20 more EMOJIs from an external source.
         await this.sushi.transfer(this.bar.address, '20', { from: carol });
-        // Alice deposits 10 more SUSHIs. She should receive 10*30/50 = 6 shares.
+        // Alice deposits 10 more EMOJIs. She should receive 10*30/50 = 6 shares.
         await this.bar.enter('10', { from: alice });
         assert.equal((await this.bar.balanceOf(alice)).valueOf(), '26');
         assert.equal((await this.bar.balanceOf(bob)).valueOf(), '10');

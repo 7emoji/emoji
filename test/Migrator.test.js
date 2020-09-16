@@ -1,5 +1,5 @@
 const { expectRevert, time } = require('@openzeppelin/test-helpers');
-const SushiToken = artifacts.require('SushiToken');
+const EmojiToken = artifacts.require('EmojiToken');
 const MasterChef = artifacts.require('MasterChef');
 const MockERC20 = artifacts.require('MockERC20');
 const UniswapV2Pair = artifacts.require('UniswapV2Pair');
@@ -10,7 +10,7 @@ contract('Migrator', ([alice, bob, dev, minter]) => {
     beforeEach(async () => {
         this.factory1 = await UniswapV2Factory.new(alice, { from: alice });
         this.factory2 = await UniswapV2Factory.new(alice, { from: alice });
-        this.sushi = await SushiToken.new({ from: alice });
+        this.sushi = await EmojiToken.new({ from: alice });
         this.weth = await MockERC20.new('WETH', 'WETH', '100000000', { from: minter });
         this.token = await MockERC20.new('TOKEN', 'TOKEN', '100000000', { from: minter });
         this.lp1 = await UniswapV2Pair.at((await this.factory1.createPair(this.weth.address, this.token.address)).logs[0].args.pair);

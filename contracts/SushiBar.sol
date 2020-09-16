@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 
 
-contract SushiBar is ERC20("SushiBar", "xSUSHI"){
+contract EmojiBar is ERC20("EmojiBar", "xEMOJI"){
     using SafeMath for uint256;
     IERC20 public sushi;
 
@@ -13,20 +13,20 @@ contract SushiBar is ERC20("SushiBar", "xSUSHI"){
         sushi = _sushi;
     }
 
-    // Enter the bar. Pay some SUSHIs. Earn some shares.
+    // Enter the bar. Pay some EMOJIs. Earn some shares.
     function enter(uint256 _amount) public {
-        uint256 totalSushi = sushi.balanceOf(address(this));
+        uint256 totalEmoji = sushi.balanceOf(address(this));
         uint256 totalShares = totalSupply();
-        if (totalShares == 0 || totalSushi == 0) {
+        if (totalShares == 0 || totalEmoji == 0) {
             _mint(msg.sender, _amount);
         } else {
-            uint256 what = _amount.mul(totalShares).div(totalSushi);
+            uint256 what = _amount.mul(totalShares).div(totalEmoji);
             _mint(msg.sender, what);
         }
         sushi.transferFrom(msg.sender, address(this), _amount);
     }
 
-    // Leave the bar. Claim back your SUSHIs.
+    // Leave the bar. Claim back your EMOJIs.
     function leave(uint256 _share) public {
         uint256 totalShares = totalSupply();
         uint256 what = _share.mul(sushi.balanceOf(address(this))).div(totalShares);

@@ -1,17 +1,17 @@
 const { expectRevert } = require('@openzeppelin/test-helpers');
-const SushiToken = artifacts.require('SushiToken');
+const EmojiToken = artifacts.require('EmojiToken');
 
-contract('SushiToken', ([alice, bob, carol]) => {
+contract('EmojiToken', ([alice, bob, carol]) => {
     beforeEach(async () => {
-        this.sushi = await SushiToken.new({ from: alice });
+        this.sushi = await EmojiToken.new({ from: alice });
     });
 
     it('should have correct name and symbol and decimal', async () => {
         const name = await this.sushi.name();
         const symbol = await this.sushi.symbol();
         const decimals = await this.sushi.decimals();
-        assert.equal(name.valueOf(), 'SushiToken');
-        assert.equal(symbol.valueOf(), 'SUSHI');
+        assert.equal(name.valueOf(), 'EmojiToken');
+        assert.equal(symbol.valueOf(), 'EMOJI');
         assert.equal(decimals.valueOf(), '18');
     });
 

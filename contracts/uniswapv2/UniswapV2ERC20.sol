@@ -5,8 +5,8 @@ import './libraries/SafeMath.sol';
 contract UniswapV2ERC20 {
     using SafeMathUniswap for uint;
 
-    string public constant name = 'SushiSwap LP Token';
-    string public constant symbol = 'SLP';
+    string public constant name = 'EmojiSwap LP Token';
+    string public constant symbol = 'ELP';
     uint8 public constant decimals = 18;
     uint  public totalSupply;
     mapping(address => uint) public balanceOf;
@@ -14,7 +14,7 @@ contract UniswapV2ERC20 {
 
     bytes32 public DOMAIN_SEPARATOR;
     // keccak256("Permit(address owner,address spender,uint256 value,uint256 nonce,uint256 deadline)");
-    bytes32 public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9;
+    bytes32 public constant PERMIT_TYPEHASH = 0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9; //TODO
     mapping(address => uint) public nonces;
 
     event Approval(address indexed owner, address indexed spender, uint value);

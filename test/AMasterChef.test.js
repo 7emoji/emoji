@@ -1,11 +1,11 @@
 const { expectRevert, time } = require('@openzeppelin/test-helpers');
-const SushiToken = artifacts.require('SushiToken');
+const EmojiToken = artifacts.require('EmojiToken');
 const MasterChef = artifacts.require('MasterChef');
 const MockERC20 = artifacts.require('MockERC20');
 
 contract('MasterChef', ([alice, bob, carol, dev, minter]) => {
     beforeEach(async () => {
-        this.sushi = await SushiToken.new({ from: alice });
+        this.sushi = await EmojiToken.new({ from: alice });
     });
 
     it('should set correct state variables', async () => {
@@ -52,7 +52,7 @@ contract('MasterChef', ([alice, bob, carol, dev, minter]) => {
             assert.equal((await this.lp.balanceOf(bob)).valueOf(), '1000');
         });
 
-        it('should give out SUSHIs only after farming time', async () => {
+        it('should give out EMOJIs only after farming time', async () => {
             // 100 per block farming rate starting at block 100 with bonus until block 1000
             this.chef = await MasterChef.new(this.sushi.address, dev, '100', '100', '1000', { from: alice });
             await this.sushi.transferOwnership(this.chef.address, { from: alice });
@@ -78,7 +78,7 @@ contract('MasterChef', ([alice, bob, carol, dev, minter]) => {
             assert.equal((await this.sushi.totalSupply()).valueOf(), '5500');
         });
 
-        it('should not distribute SUSHIs if no one deposit', async () => {
+        it('should not distribute EMOJIs if no one deposit', async () => {
             // 100 per block farming rate starting at block 200 with bonus until block 1000
             this.chef = await MasterChef.new(this.sushi.address, dev, '100', '200', '1000', { from: alice });
             await this.sushi.transferOwnership(this.chef.address, { from: alice });
@@ -102,7 +102,7 @@ contract('MasterChef', ([alice, bob, carol, dev, minter]) => {
             assert.equal((await this.lp.balanceOf(bob)).valueOf(), '1000');
         });
 
-        it('should distribute SUSHIs properly for each staker', async () => {
+        it('should distribute EMOJIs properly for each staker', async () => {
             // 100 per block farming rate starting at block 300 with bonus until block 1000
             this.chef = await MasterChef.new(this.sushi.address, dev, '100', '300', '1000', { from: alice });
             await this.sushi.transferOwnership(this.chef.address, { from: alice });
@@ -163,7 +163,7 @@ contract('MasterChef', ([alice, bob, carol, dev, minter]) => {
             assert.equal((await this.lp.balanceOf(carol)).valueOf(), '1000');
         });
 
-        it('should give proper SUSHIs allocation to each pool', async () => {
+        it('should give proper EMOJIs allocation to each pool', async () => {
             // 100 per block farming rate starting at block 400 with bonus until block 1000
             this.chef = await MasterChef.new(this.sushi.address, dev, '100', '400', '1000', { from: alice });
             await this.sushi.transferOwnership(this.chef.address, { from: alice });
@@ -178,19 +178,19 @@ contract('MasterChef', ([alice, bob, carol, dev, minter]) => {
             await time.advanceBlockTo('419');
             await this.chef.add('20', this.lp2.address, true);
             // Alice should have 10*1000 pending reward
-            assert.equal((await this.chef.pendingSushi(0, alice)).valueOf(), '10000');
+            assert.equal((await this.chef.pendingEmoji(0, alice)).valueOf(), '10000');
             // Bob deposits 10 LP2s at block 425
             await time.advanceBlockTo('424');
             await this.chef.deposit(1, '5', { from: bob });
             // Alice should have 10000 + 5*1/3*1000 = 11666 pending reward
-            assert.equal((await this.chef.pendingSushi(0, alice)).valueOf(), '11666');
+            assert.equal((await this.chef.pendingEmoji(0, alice)).valueOf(), '11666');
             await time.advanceBlockTo('430');
             // At block 430. Bob should get 5*2/3*1000 = 3333. Alice should get ~1666 more.
-            assert.equal((await this.chef.pendingSushi(0, alice)).valueOf(), '13333');
-            assert.equal((await this.chef.pendingSushi(1, bob)).valueOf(), '3333');
+            assert.equal((await this.chef.pendingEmoji(0, alice)).valueOf(), '13333');
+            assert.equal((await this.chef.pendingEmoji(1, bob)).valueOf(), '3333');
         });
 
-        it('should stop giving bonus SUSHIs after the bonus period ends', async () => {
+        it('should stop giving bonus EMOJIs after the bonus period ends', async () => {
             // 100 per block farming rate starting at block 500 with bonus until block 600
             this.chef = await MasterChef.new(this.sushi.address, dev, '100', '500', '600', { from: alice });
             await this.sushi.transferOwnership(this.chef.address, { from: alice });
@@ -201,10 +201,10 @@ contract('MasterChef', ([alice, bob, carol, dev, minter]) => {
             await this.chef.deposit(0, '10', { from: alice });
             // At block 605, she should have 1000*10 + 100*5 = 10500 pending.
             await time.advanceBlockTo('605');
-            assert.equal((await this.chef.pendingSushi(0, alice)).valueOf(), '10500');
+            assert.equal((await this.chef.pendingEmoji(0, alice)).valueOf(), '10500');
             // At block 606, Alice withdraws all pending rewards and should get 10600.
             await this.chef.deposit(0, '0', { from: alice });
-            assert.equal((await this.chef.pendingSushi(0, alice)).valueOf(), '0');
+            assert.equal((await this.chef.pendingEmoji(0, alice)).valueOf(), '0');
             assert.equal((await this.sushi.balanceOf(alice)).valueOf(), '10600');
         });
     });

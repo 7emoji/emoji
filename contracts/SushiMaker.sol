@@ -8,7 +8,7 @@ import "./uniswapv2/interfaces/IUniswapV2Pair.sol";
 import "./uniswapv2/interfaces/IUniswapV2Factory.sol";
 
 
-contract SushiMaker {
+contract EmojiMaker {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -31,7 +31,7 @@ contract SushiMaker {
         pair.transfer(address(pair), pair.balanceOf(address(this)));
         pair.burn(address(this));
         uint256 wethAmount = _toWETH(token0) + _toWETH(token1);
-        _toSUSHI(wethAmount);
+        _toEMOJI(wethAmount);
     }
 
     function _toWETH(address token) internal returns (uint256) {
@@ -63,7 +63,7 @@ contract SushiMaker {
         return amountOut;
     }
 
-    function _toSUSHI(uint256 amountIn) internal {
+    function _toEMOJI(uint256 amountIn) internal {
         IUniswapV2Pair pair = IUniswapV2Pair(factory.getPair(weth, sushi));
         (uint reserve0, uint reserve1,) = pair.getReserves();
         address token0 = pair.token0();
