@@ -9,7 +9,7 @@ contract EmojiRestaurant {
     event Enter(address indexed user, uint256 amount);
     event Leave(address indexed user, uint256 amount);
 
-    IERC20 public sushi;
+    IERC20 public emoji;
 
     uint256 public reductionPerBlock;
     uint256 public multiplier;
@@ -27,8 +27,8 @@ contract EmojiRestaurant {
 
     mapping (address => UserInfo) public userInfo;
 
-    constructor(IERC20 _sushi, uint256 _reductionPerBlock) public {
-        sushi = _sushi;
+    constructor(IERC20 _emoji, uint256 _reductionPerBlock) public {
+        emoji = _emoji;
         reductionPerBlock = _reductionPerBlock; // Use 999999390274979584 for 10% per month
         multiplier = 1e18; // Should be good for 20 years
         lastMultiplerProcessBlock = block.number;
@@ -51,7 +51,7 @@ contract EmojiRestaurant {
         lastMultiplerProcessBlock = block.number;
         // Update accEmojiPerShare / ackEmojiBalance
         if (totalShares > 0) {
-            uint256 additionalEmoji = sushi.balanceOf(address(this)).sub(ackEmojiBalance);
+            uint256 additionalEmoji = emoji.balanceOf(address(this)).sub(ackEmojiBalance);
             accEmojiPerShare = accEmojiPerShare.add(additionalEmoji.mul(1e12).div(totalShares));
             ackEmojiBalance = ackEmojiBalance.add(additionalEmoji);
         }
@@ -67,7 +67,7 @@ contract EmojiRestaurant {
     function enter(uint256 _amount) public {
         cleanup();
         safeEmojiTransfer(msg.sender, getPendingReward(msg.sender));
-        sushi.transferFrom(msg.sender, address(this), _amount);
+        emoji.transferFrom(msg.sender, address(this), _amount);
         ackEmojiBalance = ackEmojiBalance.add(_amount);
         UserInfo storage user = userInfo[msg.sender];
         uint256 moreShare = _amount.mul(multiplier).div(1e18);
@@ -92,14 +92,14 @@ contract EmojiRestaurant {
         emit Leave(msg.sender, _amount);
     }
 
-    // Safe sushi transfer function, just in case if rounding error causes pool to not have enough EMOJIs.
+    // Safe emoji transfer function, just in case if rounding error causes pool to not have enough EMOJIs.
     function safeEmojiTransfer(address _to, uint256 _amount) internal {
-        uint256 sushiBal = sushi.balanceOf(address(this));
-        if (_amount > sushiBal) {
-            sushi.transfer(_to, sushiBal);
-            ackEmojiBalance = ackEmojiBalance.sub(sushiBal);
+        uint256 emojiBal = emoji.balanceOf(address(this));
+        if (_amount > emojiBal) {
+            emoji.transfer(_to, emojiBal);
+            ackEmojiBalance = ackEmojiBalance.sub(emojiBal);
         } else {
-            sushi.transfer(_to, _amount);
+            emoji.transfer(_to, _amount);
             ackEmojiBalance = ackEmojiBalance.sub(_amount);
         }
     }

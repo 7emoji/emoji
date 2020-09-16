@@ -59,14 +59,14 @@ contract MasterChef is Ownable {
     }
 
     // The EMOJI TOKEN!
-    EmojiToken public sushi;
+    EmojiToken public emoji;
     // Dev address.
     address public devaddr;
     // Block number when bonus EMOJI period ends.
     uint256 public bonusEndBlock;
     // EMOJI tokens created per block.
-    uint256 public sushiPerBlock;
-    // Bonus muliplier for early sushi makers.
+    uint256 public emojiPerBlock;
+    // Bonus muliplier for early emoji makers.
     uint256 public constant BONUS_MULTIPLIER = 10;
     // The migrator contract. It has a lot of power. Can only be set through governance (owner).
     IMigratorChef public migrator;
@@ -85,15 +85,15 @@ contract MasterChef is Ownable {
     event EmergencyWithdraw(address indexed user, uint256 indexed pid, uint256 amount);
 
     constructor(
-        EmojiToken _sushi,
+        EmojiToken _emoji,
         address _devaddr,
-        uint256 _sushiPerBlock,
+        uint256 _emojiPerBlock,
         uint256 _startBlock,
         uint256 _bonusEndBlock
     ) public {
-        sushi = _sushi;
+        emoji = _emoji;
         devaddr = _devaddr;
-        sushiPerBlock = _sushiPerBlock;
+        emojiPerBlock = _emojiPerBlock;
         bonusEndBlock = _bonusEndBlock;
         startBlock = _startBlock;
     }
@@ -166,8 +166,8 @@ contract MasterChef is Ownable {
         uint256 lpSupply = pool.lpToken.balanceOf(address(this));
         if (block.number > pool.lastRewardBlock && lpSupply != 0) {
             uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number); // TODO
-            uint256 sushiReward = multiplier.mul(sushiPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
-            accEmojiPerShare = accEmojiPerShare.add(sushiReward.mul(1e12).div(lpSupply));
+            uint256 emojiReward = multiplier.mul(emojiPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
+            accEmojiPerShare = accEmojiPerShare.add(emojiReward.mul(1e12).div(lpSupply));
         }
         return user.amount.mul(accEmojiPerShare).div(1e12).sub(user.rewardDebt);
     }
@@ -192,10 +192,10 @@ contract MasterChef is Ownable {
             return;
         }
         uint256 multiplier = getMultiplier(pool.lastRewardBlock, block.number);
-        uint256 sushiReward = multiplier.mul(sushiPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
-        sushi.mint(devaddr, sushiReward.div(10)); // TODO
-        sushi.mint(address(this), sushiReward);
-        pool.accEmojiPerShare = pool.accEmojiPerShare.add(sushiReward.mul(1e12).div(lpSupply));
+        uint256 emojiReward = multiplier.mul(emojiPerBlock).mul(pool.allocPoint).div(totalAllocPoint);
+        emoji.mint(devaddr, emojiReward.div(10)); // TODO
+        emoji.mint(address(this), emojiReward);
+        pool.accEmojiPerShare = pool.accEmojiPerShare.add(emojiReward.mul(1e12).div(lpSupply));
         pool.lastRewardBlock = block.number;
     }
 
@@ -246,13 +246,13 @@ contract MasterChef is Ownable {
         user.rewardDebt = 0;
     }
 
-    // Safe sushi transfer function, just in case if rounding error causes pool to not have enough EMOJIs.
+    // Safe emoji transfer function, just in case if rounding error causes pool to not have enough EMOJIs.
     function safeEmojiTransfer(address _to, uint256 _amount) internal {
-        uint256 sushiBal = sushi.balanceOf(address(this));
-        if (_amount > sushiBal) {
-            sushi.transfer(_to, sushiBal);
+        uint256 emojiBal = emoji.balanceOf(address(this));
+        if (_amount > emojiBal) {
+            emoji.transfer(_to, emojiBal);
         } else {
-            sushi.transfer(_to, _amount);
+            emoji.transfer(_to, _amount);
         }
     }
 

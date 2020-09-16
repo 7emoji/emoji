@@ -7,13 +7,13 @@ const UniswapV2Factory = artifacts.require('UniswapV2Factory');
 contract('EmojiMaker', ([alice, bar, minter]) => {
     beforeEach(async () => {
         this.factory = await UniswapV2Factory.new(alice, { from: alice });
-        this.sushi = await EmojiToken.new({ from: alice });
-        await this.sushi.mint(minter, '100000000', { from: alice });
+        this.emoji = await EmojiToken.new({ from: alice });
+        await this.emoji.mint(minter, '100000000', { from: alice });
         this.weth = await MockERC20.new('WETH', 'WETH', '100000000', { from: minter });
         this.token1 = await MockERC20.new('TOKEN1', 'TOKEN', '100000000', { from: minter });
         this.token2 = await MockERC20.new('TOKEN2', 'TOKEN2', '100000000', { from: minter });
-        this.maker = await EmojiMaker.new(this.factory.address, bar, this.sushi.address, this.weth.address);
-        this.sushiWETH = await UniswapV2Pair.at((await this.factory.createPair(this.weth.address, this.sushi.address)).logs[0].args.pair);
+        this.maker = await EmojiMaker.new(this.factory.address, bar, this.emoji.address, this.weth.address);
+        this.emojiWETH = await UniswapV2Pair.at((await this.factory.createPair(this.weth.address, this.emoji.address)).logs[0].args.pair);
         this.wethToken1 = await UniswapV2Pair.at((await this.factory.createPair(this.weth.address, this.token1.address)).logs[0].args.pair);
         this.wethToken2 = await UniswapV2Pair.at((await this.factory.createPair(this.weth.address, this.token2.address)).logs[0].args.pair);
         this.token1Token2 = await UniswapV2Pair.at((await this.factory.createPair(this.token1.address, this.token2.address)).logs[0].args.pair);
@@ -21,9 +21,9 @@ contract('EmojiMaker', ([alice, bar, minter]) => {
 
     it('should make EMOJIs successfully', async () => {
         await this.factory.setFeeTo(this.maker.address, { from: alice });
-        await this.weth.transfer(this.sushiWETH.address, '10000000', { from: minter });
-        await this.sushi.transfer(this.sushiWETH.address, '10000000', { from: minter });
-        await this.sushiWETH.mint(minter);
+        await this.weth.transfer(this.emojiWETH.address, '10000000', { from: minter });
+        await this.emoji.transfer(this.emojiWETH.address, '10000000', { from: minter });
+        await this.emojiWETH.mint(minter);
         await this.weth.transfer(this.wethToken1.address, '10000000', { from: minter });
         await this.token1.transfer(this.wethToken1.address, '10000000', { from: minter });
         await this.wethToken1.mint(minter);
@@ -44,18 +44,18 @@ contract('EmojiMaker', ([alice, bar, minter]) => {
         assert.equal((await this.token1Token2.balanceOf(this.maker.address)).valueOf(), '16528');
         // After calling convert, bar should have EMOJI value at ~1/6 of revenue
         await this.maker.convert(this.token1.address, this.token2.address);
-        assert.equal((await this.sushi.balanceOf(bar)).valueOf(), '32965');
+        assert.equal((await this.emoji.balanceOf(bar)).valueOf(), '32965');
         assert.equal((await this.token1Token2.balanceOf(this.maker.address)).valueOf(), '0');
         // Should also work for EMOJI-ETH pair
-        await this.sushi.transfer(this.sushiWETH.address, '100000', { from: minter });
-        await this.weth.transfer(this.sushiWETH.address, '100000', { from: minter });
-        await this.sushiWETH.sync();
-        await this.sushi.transfer(this.sushiWETH.address, '10000000', { from: minter });
-        await this.weth.transfer(this.sushiWETH.address, '10000000', { from: minter });
-        await this.sushiWETH.mint(minter);
-        assert.equal((await this.sushiWETH.balanceOf(this.maker.address)).valueOf(), '16537');
-        await this.maker.convert(this.sushi.address, this.weth.address);
-        assert.equal((await this.sushi.balanceOf(bar)).valueOf(), '66249');
-        assert.equal((await this.sushiWETH.balanceOf(this.maker.address)).valueOf(), '0');
+        await this.emoji.transfer(this.emojiWETH.address, '100000', { from: minter });
+        await this.weth.transfer(this.emojiWETH.address, '100000', { from: minter });
+        await this.emojiWETH.sync();
+        await this.emoji.transfer(this.emojiWETH.address, '10000000', { from: minter });
+        await this.weth.transfer(this.emojiWETH.address, '10000000', { from: minter });
+        await this.emojiWETH.mint(minter);
+        assert.equal((await this.emojiWETH.balanceOf(this.maker.address)).valueOf(), '16537');
+        await this.maker.convert(this.emoji.address, this.weth.address);
+        assert.equal((await this.emoji.balanceOf(bar)).valueOf(), '66249');
+        assert.equal((await this.emojiWETH.balanceOf(this.maker.address)).valueOf(), '0');
     });
 });

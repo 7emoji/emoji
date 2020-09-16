@@ -14,12 +14,12 @@ contract EmojiMaker {
 
     IUniswapV2Factory public factory;
     address public bar;
-    address public sushi;
+    address public emoji;
     address public weth;
 
-    constructor(IUniswapV2Factory _factory, address _bar, address _sushi, address _weth) public {
+    constructor(IUniswapV2Factory _factory, address _bar, address _emoji, address _weth) public {
         factory = _factory;
-        sushi = _sushi;
+        emoji = _emoji;
         bar = _bar;
         weth = _weth;
     }
@@ -35,14 +35,14 @@ contract EmojiMaker {
     }
 
     function _toWETH(address token) internal returns (uint256) {
-        if (token == sushi) {
+        if (token == emoji) {
             uint amount = IERC20(token).balanceOf(address(this));
             _safeTransfer(token, bar, amount);
             return 0;
         }
         if (token == weth) {
             uint amount = IERC20(token).balanceOf(address(this));
-            _safeTransfer(token, factory.getPair(weth, sushi), amount);
+            _safeTransfer(token, factory.getPair(weth, emoji), amount);
             return amount;
         }
         IUniswapV2Pair pair = IUniswapV2Pair(factory.getPair(token, weth));
@@ -59,12 +59,12 @@ contract EmojiMaker {
         uint amountOut = numerator / denominator;
         (uint amount0Out, uint amount1Out) = token0 == token ? (uint(0), amountOut) : (amountOut, uint(0));
         _safeTransfer(token, address(pair), amountIn);
-        pair.swap(amount0Out, amount1Out, factory.getPair(weth, sushi), new bytes(0));
+        pair.swap(amount0Out, amount1Out, factory.getPair(weth, emoji), new bytes(0));
         return amountOut;
     }
 
     function _toEMOJI(uint256 amountIn) internal {
-        IUniswapV2Pair pair = IUniswapV2Pair(factory.getPair(weth, sushi));
+        IUniswapV2Pair pair = IUniswapV2Pair(factory.getPair(weth, emoji));
         (uint reserve0, uint reserve1,) = pair.getReserves();
         address token0 = pair.token0();
         (uint reserveIn, uint reserveOut) = token0 == weth ? (reserve0, reserve1) : (reserve1, reserve0);
