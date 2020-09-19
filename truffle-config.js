@@ -21,9 +21,15 @@ module.exports = {
     },
     rinkeby: {
       provider: function() {
-      return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/..."); // TODO: Your API KEY
+        return new HDWalletProvider(
+          process.env.HDWALLET_MNEMONIC,
+          process.env.INFURA_PROVIDER_URL,
+          0, // we start with address[0]
+          8 // notice that we unlock eight: which will be address[0] and address[1]
+        )
       },
       network_id: 4,
+      skipDryRun: true,
       gas: 4500000,
       gasPrice: 10000000000,
     }
@@ -32,7 +38,13 @@ module.exports = {
   //
   compilers: {
     solc: {
-      version: "0.6.12"
+      version: "0.6.12",
+      settings: {
+        optimizer: {
+          enabled: true,
+          runs: 1
+        }
+      }
     }
   }
 };
