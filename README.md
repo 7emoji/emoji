@@ -2,6 +2,17 @@
 
 Feel free to read the code. More details coming soon.
 
+## Setting up your workspace
+
+1. run 'npm install' in your workspace
+2. run Ganache and setup a workspace
+3. run 'npm test' in your workspace
+
+### Deploying locally
+
+1. run 'npx ganache-cli --deterministic --allowUnlimitedContractSize'
+2. run 'npx truffle migrate --network test'
+
 ## Deployed Contracts / Hash
 
 - EmojiToken - https://etherscan.io/token/0x0
