@@ -57,12 +57,14 @@ contract('Governor', ([alice, minter, dev]) => {
         await expectRevert(this.gov.queue('1'), "GovernorAlpha::queue: proposal can only be queued if it is succeeded");
         console.log("Advancing 17280 blocks. Will take a while...");
         for (let i = 0; i < 17280; ++i) {
+            if (i%100 === 0) console.log(`Advanced ${i} blocks!`);
             await time.advanceBlock();
         }
+        console.log("Advanced 17280 blocks!");
         await this.gov.queue('1');
         await expectRevert(this.gov.execute('1'), "Timelock::executeTransaction: Transaction hasn't surpassed time lock.");
         await time.increase(time.duration.days(3));
         await this.gov.execute('1');
         assert.equal((await this.chef.poolLength()).valueOf(), '2');
-    });
+    }).timeout(0);
 });
