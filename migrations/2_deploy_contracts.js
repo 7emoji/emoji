@@ -22,7 +22,10 @@ async function deployToken(deployer,network,accounts) {
         dev_addr = accounts[9];
         account1 = accounts[8];
 
-        let emojiToken = await deployer.deploy(EmojiToken);
+        await deployer.deploy(EmojiToken);
+        let emojiToken = await EmojiToken.deployed(); // deze gedraagt zich anders!
+        console.log(emojiToken.address)
+
         await deployer.deploy(MasterChef, EmojiToken.address, dev_addr, 25, 0, 0);
         await deployer.deploy(EmojiBar, EmojiToken.address);
 
@@ -40,23 +43,40 @@ async function deployToken(deployer,network,accounts) {
      
         let router = await deployer.deploy(UniswapRouter, UniswapFactory.address, dev_addr);
 
-        console.log("poolToken:", poolToken);
-        console.log("Router:", router);
-
         await deployer.deploy(EmojiMaker, UniswapFactory.address, EmojiBar.address, EmojiToken.address, wethToken.address);
 
-       /* await AnotherERC20Token.approve( router.address,10000000000 );
-        router.addLiquidityETH(
-            AnotherERC20Token.address,
-            10000000000, //FIXME: Use BigNumbers (expandTo18Decimals)
-            10000000000,
-            1000000000,
-            account1, // poolToken.address?
-            1602088165,
-            {from: account1, value: 10000000000}
-        );
-        */
-        
-    }
+        // console.log(MockERC20)
+        // console.log('=======================================================================================================')
+        // console.log(wethToken)
+        // console.log("routeraddress", router.address)
+        // console.log("pooltoken", poolToken)
+        // console.log("pooltokenaddress", poolToken.logs[0].address)
+        // console.log("account1", account1)
+
+        await anotherToken.approve( router.address,10000000000 );
+        await wethToken.approve( router.address, 10000000000);
+        // console.log(await wethToken.totalSupply())
+        // console.log(await anotherToken.totalSupply())
+        // console.log(await anotherToken.allowance(accounts[0], router.address))
+        // console.log(await wethToken.allowance(accounts[0], router.address))
+        console.log(emojiToken.address)
+        await emojiToken.mint(router.address, 10000000000);
+        console.log(await emojiToken.balanceOf(router.address))
+
+        try {
+            await router.addLiquidityETH( // hier gaat nog altijd iets mis, maar wat?
+                anotherToken.address, // welk address moet hier precies?
+                10000000000, // FIXME: use BigNumbers ExpandTo!8Decimals
+                5000000000,
+                1000000000,
+                account1, // poolToken.address? welk address moet hier precies?
+                ~~((Date.now() + 1000*24*60*60) / 1000), // dit moet even netjes, maar het werk op zich wel
+                {from: router.address, value: 10, gas: 1000000000}
+            );
+            
+        } catch(err){
+            console.error(err)
+        }
+    } 
 
 }
