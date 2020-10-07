@@ -5,7 +5,6 @@ const EmojiBar = artifacts.require("EmojiBar");
 const UniswapFactory = artifacts.require("UniSwapV2Factory");
 const UniswapRouter = artifacts.require("UniswapV2Router02");
 const MockERC20 = artifacts.require("MockERC20");
-const AnotherERC20Token = artifacts.require("AnotherToken");
 const EmojiMaker = artifacts.require("EmojiMaker");
 
 const migration = async function(deployer,network,accounts) {
@@ -31,30 +30,20 @@ async function deployToken(deployer,network,accounts) {
         
         let wethToken = await deployer.deploy(MockERC20, "Wrapped Ether", "WETH", 1000);
         
-        let anotherToken = await deployer.deploy(AnotherERC20Token, "Another Token", "AT", 10000000000);
+        let anotherToken = await deployer.new(MockERC20, "Another Token", "AT", 10000000000); // using "new" it will create a new instance!
 
-        
-        console.log("WETH token address " + wethToken.address);
-        
         let poolToken = 0x0;
-        if(( (await factory.getPair(MockERC20.address, AnotherERC20Token.address)).toString()) === '0x0000000000000000000000000000000000000000') {
-            poolToken = await factory.createPair(MockERC20.address, AnotherERC20Token.address);
+        if(( (await factory.getPair(wethToken.address, anotherToken.address)).toString()) === '0x0000000000000000000000000000000000000000') {
+            poolToken = await factory.createPair(wethToken.address, anotherToken.address);
             console.log('Result:', poolToken);
         }
      
-        
-
         let router = await deployer.deploy(UniswapRouter, UniswapFactory.address, dev_addr);
 
-        console.log("addLiquidityETH:");
         console.log("poolToken:", poolToken);
-        
-        console.log("EmojiToken address:", EmojiToken.address );
-        console.log("MockERC20 address: ", MockERC20.address);
-        console.log("AnotherToken address: ", AnotherERC20Token.address);
         console.log("Router:", router);
 
-        await deployer.deploy(EmojiMaker, UniswapFactory.address, EmojiBar.address, EmojiToken.address, MockERC20.address);
+        await deployer.deploy(EmojiMaker, UniswapFactory.address, EmojiBar.address, EmojiToken.address, wethToken.address);
 
        /* await AnotherERC20Token.approve( router.address,10000000000 );
         router.addLiquidityETH(
