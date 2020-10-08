@@ -6,8 +6,9 @@ const EmojiBar = artifacts.require("EmojiBar");
 const UniswapFactory = artifacts.require("UniSwapV2Factory");
 const UniswapRouter = artifacts.require("UniswapV2Router02");
 
-const Token0 = artifacts.require("Token0");
-const Token1 = artifacts.require("Token1");
+//const MockERC20 = artifacts.require("MockERC20");
+const Token0 = artifacts.require("Token0")
+const Token1 = artifacts.require("Token1")
 
 
 const migration = async function(deployer,network,accounts) {
@@ -30,10 +31,9 @@ async function deployToken(deployer,network,accounts) {
 
         await deployer.deploy(UniswapFactory, dev_addr);
         await deployer.deploy(UniswapRouter, UniswapFactory.address, dev_addr);
-
+  
         await deployer.deploy(Token0, "AAA", "AAA", 100000000 );
         await deployer.deploy(Token1, "ZZZ", "ZZZ", 100000000 );
-        
 
         //await deployer.deploy(EmojiMaker, 
         //    UniswapFactory.address, EmojiBar.address, EmojiToken.address, weth_address);

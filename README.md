@@ -10,8 +10,13 @@ Feel free to read the code. More details coming soon.
 
 ### Deploying locally
 
-1. run 'npx ganache-cli --deterministic --allowUnlimitedContractSize'
+For testing:
+1. run 'npx ganache-cli --deterministic --allowUnlimitedContractSize --networkId 2'
 2. run 'npx truffle migrate --network test'
+
+For development:
+1. run 'npx ganache-cli --deterministic --allowUnlimitedContractSize --networkId 1 -p 7545'
+2. run 'npx truffle migrate --network develop'
 
 ## Deployed Contracts / Hash
 
