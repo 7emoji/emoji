@@ -1,3 +1,6 @@
+require('dotenv').config();
+const HDWalletProvider = require('truffle-hdwallet-provider');
+
 module.exports = {
   // Uncommenting the defaults below
   // provides for an easier quick-start with Ganache.
@@ -11,14 +14,14 @@ module.exports = {
   networks: {
     develop: {
       host: "127.0.0.1",
-      port: 7545,
+      port: 8545,
       network_id: "1",
       gasPrice: 0,
       gas: 6000000,
     },
     test: {
       host: "127.0.0.1",
-      port: 8545,
+      port: 7545,
       network_id: "2"
     },
     rinkeby: {
@@ -34,7 +37,18 @@ module.exports = {
       skipDryRun: true,
       gas: 4500000,
       gasPrice: 10000000000,
-    }
+    },
+    ropsten: {
+      provider: function() {
+        return new HDWalletProvider(
+          process.env.ROPSTEN_MNEMONIC,
+          process.env.ROPSTEN_URL,
+          0,
+          10)
+        },
+        network_id: "3",
+        gas: 4000000,
+    },
   },
     
   //
