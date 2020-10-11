@@ -18,6 +18,19 @@ For development:
 1. run 'npx ganache-cli --deterministic --allowUnlimitedContractSize --networkId 1 -p 7545'
 2. run 'npx truffle migrate --network develop'
 
+## Deploying on Ropsten
+
+1. Edit secrets.env.template and set variables
+2. truffle console --network ropsten
+3. truffle(ropsten)> await web3.eth.getAccounts()
+4. truffle(ropsten)> await web3.eth.getBalance('<ADDRESS>')
+5. Get some ether 
+- https://faucet.ropsten.be/
+- https://faucet.metamask.io/
+- https://faucet.kyber.network/
+6. truffle migrate --reset --network ropsten
+
+
 ## Deployed Contracts / Hash
 
 - EmojiToken - https://etherscan.io/token/0x0
