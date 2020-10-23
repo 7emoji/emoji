@@ -41,6 +41,17 @@ For development:
 - EmojiBar - https://etherscan.io/address/0x0
 - EmojiMaker - https://etherscan.io/address/0x0
 
+
+## Play ground
+
+truffle(develop)>  let router = await UniswapV2Router02.deployed();
+truffle(develop)>  let token0 = await Token0.deployed();
+truffle(develop)>  let token1 = await Token1.deployed();
+truffle(develop)>  token0.approve( router.address, web3.utils.toWei('1000000'));
+truffle(develop)>  token1.approve( router.address, web3.utils.toWei('1000000'));
+
+router.addLiquidity( token0.address,token1.address, web3.utils.toWei('100'),web3.utils.toWei('100'),web3.utils.toWei('98'),web3.utils.toWei('98'),accounts[0],1603481598,{value: web3.utils.toWei('0.01')})
+
 ## License
 
 WTFPL
