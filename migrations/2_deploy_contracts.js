@@ -24,20 +24,55 @@ module.exports = migration;
 
 async function deployToken(deployer,network,accounts) {
 
-    if( network === 'test' || network === 'develop') {
-        
+    if( network === 'develop' ) {
+
         let dev_addr = accounts[9];
-        
+
+        await deployer.deploy(WETH);
+        const weth = await WETH.deployed();
+
+        let weth_addr = weth.address;
+
         await deployer.deploy(EmojiToken);
         await deployer.deploy(MasterChef, EmojiToken.address, dev_addr, 25, 0, 0);
-        await deployer.deploy(EmojiBar, EmojiToken.address);
-
         await deployer.deploy(UniswapFactory, dev_addr);
-        await deployer.deploy(UniswapRouter, UniswapFactory.address, dev_addr);
-  
+        await deployer.deploy(UniswapRouter, UniswapFactory.address, weth_addr);
+
         // Two dummy tokens to test pairing
-        await deployer.deploy(Token0, "AAA", "AAA", 100000000 );
-        await deployer.deploy(Token1, "ZZZ", "ZZZ", 100000000 );
+        await deployer.deploy(Token0, "AAA", "AAA",  web3.utils.toWei('1000000') );
+        await deployer.deploy(Token1, "ZZZ", "ZZZ",  web3.utils.toWei('1000000') );
+    }
+    else if( network === 'test' ) {
+        
+        let dev_addr = accounts[0];
+       
+        await deployer.deploy(WETH);
+        const weth = await WETH.deployed();
+
+        let weth_addr = weth.address;
+        
+        const emojiToken = await deployer.deploy(EmojiToken);
+        const AAAToken = await deployer.deploy(Token0, "AAA", "AAA", web3.utils.toWei('1000000') );
+        const ZZZToken = await deployer.deploy(Token1, "ZZZ", "ZZZ", web3.utils.toWei('1000000') );
+
+        await deployer.deploy(MasterChef, EmojiToken.address, dev_addr, 25, 0, 0);
+        await deployer.deploy(EmojiBar, EmojiToken.address);
+        const factory = await deployer.deploy(UniswapFactory, dev_addr);
+
+
+        await deployer.deploy(UniswapRouter, factory.address, weth_addr);
+
+        
+        const masterChef = await MasterChef.deployed();
+        // MasterChef is the master of Emoji. He can make Emoji and he is a fair guy.
+        await emojiToken.transferOwnership(masterChef.address);
+
+        await deployer.deploy(EmojiMaker,
+             UniswapFactory.address, EmojiBar.address, EmojiToken.address, weth_addr);
+        
+        const emojiMaker = await EmojiMaker.deployed();
+        await factory.setFeeTo(emojiMaker.address);
+
 
     }
     else if ( network === 'ropsten' ) {
@@ -50,12 +85,13 @@ async function deployToken(deployer,network,accounts) {
         let weth_addr = weth.address;
         
         const emojiToken = await deployer.deploy(EmojiToken);
+        const AAAToken = await deployer.deploy(Token0, "AAA", "AAA", web3.utils.toWei('1000000') );
+        const ZZZToken = await deployer.deploy(Token1, "ZZZ", "ZZZ", web3.utils.toWei('1000000') );
+
         await deployer.deploy(MasterChef, EmojiToken.address, dev_addr, 25, 0, 0);
         await deployer.deploy(EmojiBar, EmojiToken.address);
         const factory = await deployer.deploy(UniswapFactory, dev_addr);
 
-        const poolToken = await factory.createPair( weth_addr, emojiToken.address );
-        console.log("pool: ", poolToken);
 
         await deployer.deploy(UniswapRouter, factory.address, weth_addr);
 
