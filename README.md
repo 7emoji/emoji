@@ -18,6 +18,10 @@ For development:
 1. run 'npx ganache-cli --deterministic --allowUnlimitedContractSize --networkId 1 -p 7545'
 2. run 'npx truffle migrate --network develop'
 
+Cleaning up networks not referenced in truffle-config:
+1. run 'npx truffle networks --clean'
+2. run 'npx truffle networks' 
+
 ## Deploying on Ropsten
 
 1. Edit secrets.env.template and set variables
