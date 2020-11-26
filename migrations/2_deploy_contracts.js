@@ -8,7 +8,7 @@ const EmojiMaker = artifacts.require("EmojiMaker");
 const UniswapFactory = artifacts.require("UniSwapV2Factory");
 const UniswapRouter = artifacts.require("UniswapV2Router02");
 const UniswapPair = artifacts.require("UniswapV2Pair");
-const UniswapERC20 = artifacts.require("UniswapV2ERC20")
+const ELPUniswapERC20 = artifacts.require("UniswapV2ERC20")
 
 const Migrator = artifacts.require('Migrator');
 const WETH = artifacts.require('WETH');
@@ -66,9 +66,19 @@ async function deployToken(deployer,network,accounts) {
         const ZZZToken = await deployer.deploy(Token1, "ZZZ", "ZZZ", web3.utils.toWei('1000000') );
         console.log("AAAToken:", AAAToken.address);
         console.log("ZZZToken:", ZZZToken.address);
+
+        console.log("Create pair WETH-ZZZToken:");
+        const pair0 = await factory.createPair(weth_addr, AAAToken.address); 
+        console.log(pair0);
+
+        console.log("Create pair WETH-ZZZToken:");
+        const pair1 = await factory.createPair(weth_addr, ZZZToken.address); 
+        console.log(pair1);
+       
+    //    await masterChef.add( 25, AAAToken.address, true, { from: dev_addr } );
+    //    await masterChef.add( 25, ZZZToken.address, true, { from: dev_addr } );
     }
-
-
+    
     console.log("Admin:", dev_addr);
     console.log("WETH:",weth.address);
     console.log("EmojiToken:", emojiToken.address);
@@ -78,5 +88,11 @@ async function deployToken(deployer,network,accounts) {
     console.log("EmojiBar:", EmojiBar.address);
     console.log("EmojiMaker:",emojiMaker.address);
 
+    console.log("Create pair WETH-EmojiToken:");
+    const pair2 = await factory.createPair(weth_addr, emojiToken.address); 
+    console.log(pair2);
 
+   // const x = await masterChef.add( 25, pair2.address, true);
+  //  console.log(x);
+   
 }
